@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
+import java.util.Arrays;
 
 public class Animal {
     public static final String PATH = "./yoloProject/jar/flyWithMe.jar";
@@ -14,17 +15,22 @@ public class Animal {
 
     /**
      * Find Class in JAR file by Path
+     *
      * @return Class
      */
     public Class<?> getCurrentClass() {
         try {
             File fileName = new File(PATH);
-            URLClassLoader child = new URLClassLoader(
-                    new URL[] {fileName.toURI().toURL()},
-                    this.getClass().getClassLoader()
-            );
-           return Class.forName(CLASS_NAME, true, child);
-        }catch (Exception e) {
+            System.out.println(this);
+            // get class parent
+            ClassLoader parent = this.getClass().getClassLoader();
+            // get url of file
+            URL[] url = new URL[]{fileName.toURI().toURL()};
+            //get Class loader
+            URLClassLoader child = new URLClassLoader(url , parent);
+
+            return Class.forName(CLASS_NAME, true, child);
+        } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
@@ -33,7 +39,7 @@ public class Animal {
     /**
      * Run method in JAR file
      */
-    public void  fly(Class<?> classToLoad) {
+    public void fly(Class<?> classToLoad) {
         try {
             // get Method in class by method name
             Method method = classToLoad.getDeclaredMethod(METHOD);
@@ -41,7 +47,7 @@ public class Animal {
             Object instance = classToLoad.getDeclaredConstructor().newInstance();
             method.invoke(instance);
             Thread.sleep(1000);
-        }catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -69,9 +75,9 @@ public class Animal {
                 }
                 this.fly(classLoader);
                 count++;
-                System.out.println("-------------- " +count+" ----------------");
+                System.out.println("-------------- " + count + " ----------------");
             }
-        }catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -79,6 +85,6 @@ public class Animal {
 
     public static void main(String[] args) {
         Animal animal = new Animal();
-        animal.runJARFile();
+        animal.getCurrentClass();
     }
 }
