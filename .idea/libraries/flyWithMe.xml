@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="flyWithMe">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/yoloProject/withWings/flyWithMe.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
