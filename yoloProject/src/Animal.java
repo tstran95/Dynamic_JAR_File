@@ -6,10 +6,9 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
-import java.util.Arrays;
 
 public class Animal {
-    public static final String PATH = "./yoloProject/jar/flyWithMe.jar";
+    public static final String PATH = "./jar/flyWithMe.jar";
     public static final String CLASS_NAME = "Bird";
     public static final String METHOD = "flying";
 
@@ -21,12 +20,11 @@ public class Animal {
     public Class<?> getCurrentClass() {
         try {
             File fileName = new File(PATH);
-            System.out.println(this);
-            // get class parent
+            // get class loader parent
             ClassLoader parent = this.getClass().getClassLoader();
             // get url of file
             URL[] url = new URL[]{fileName.toURI().toURL()};
-            //get Class loader
+            //get URL Class loader child
             URLClassLoader child = new URLClassLoader(url , parent);
 
             return Class.forName(CLASS_NAME, true, child);
@@ -39,12 +37,12 @@ public class Animal {
     /**
      * Run method in JAR file
      */
-    public void fly(Class<?> classToLoad) {
+    private void fly(Class<?> classLoaded) {
         try {
-            // get Method in class by method name
-            Method method = classToLoad.getDeclaredMethod(METHOD);
+            // get Method in class by name
+            Method method = classLoaded.getDeclaredMethod(METHOD);
             // create instance of class
-            Object instance = classToLoad.getDeclaredConstructor().newInstance();
+            Object instance = classLoaded.getDeclaredConstructor().newInstance();
             method.invoke(instance);
             Thread.sleep(1000);
         } catch (Exception e) {
@@ -67,10 +65,11 @@ public class Animal {
             Class<?> classLoader = this.getCurrentClass();
 
             while (true) {
-                FileTime currentAccessFileTime = Files.readAttributes(Paths.get(fileName.toURI()), BasicFileAttributes.class).lastAccessTime();
-                // check modify time of this JAR file
-                // if 2 time diff -> file modified and get current JAR file again
-                if (!fileTime.equals(currentAccessFileTime)) {
+                FileTime currentAccessFileTime = Files.readAttributes(Paths.get(fileName.toURI()), BasicFileAttributes.class)
+                                                        .lastAccessTime();
+                // check access time of this JAR file
+                // if 2 time diff -> file replaced and get class in current JAR file again
+                if (!currentAccessFileTime.equals(fileTime)) {
                     classLoader = this.getCurrentClass();
                 }
                 this.fly(classLoader);
